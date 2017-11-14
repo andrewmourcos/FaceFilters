@@ -11,11 +11,14 @@ helmet = cv2.imread('helmet.png')
 cap = cv2.VideoCapture(0)
 
 while 1:
+    # set window size
+    ret = cap.set(3, 1080)
+    ret = cap.set(4, 1920)
     # get frames
     ret, img = cap.read()
     # convert frames to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
+    # put watermark
     font = cv2.FONT_HERSHEY_SIMPLEX
     cv2.putText(img, 'par Andrew Mourcos', (0, 15), font, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
 
@@ -24,9 +27,10 @@ while 1:
 
     # iterate over faces found
     for (x, y, w, h) in faces:
-        h = h+150
-        w = w+150
-        roi_color = img[y-100:y -100 + h, x:x + w]
+        # get a roi of the face
+        roi_color = img[y:y + h, x:x + w]
+        # make helmet the same size as the roi
+
         resize_helmet = cv2.resize(helmet, (w,h), interpolation=cv2.INTER_AREA)
 
         try:
@@ -36,7 +40,7 @@ while 1:
             img1_bg = cv2.bitwise_and(roi_color, roi_color, mask=mask_inv)
             img2_fg = cv2.bitwise_and(resize_helmet, resize_helmet, mask=mask)
             dst = cv2.add(img1_bg, img2_fg)
-            img[y-100:y -100 + h, x:x + w] = dst
+            img[y:y + h, x:x + w] = dst
         except:
             pass
 
